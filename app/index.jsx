@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -34,11 +34,41 @@ const Item = ({ name, price, onDelete }) => (
 export default function Page() {
   const [initialAmount, setInitialAmount] = useState("");
   const [remainingBalance, setRemainingBalance] = useState(0);
+  const [displayedBalance, setDisplayedBalance] = useState(0);
   const [showInput, setShowInput] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    let start = displayedBalance;
+    const end = remainingBalance;
+    if (start === end) return;
+
+    const duration = 1000; // Total duration of the animation in milliseconds
+    const range = Math.abs(end - start); // Total amount to count
+    const increment = Math.ceil(range / 100); // Increment value
+    const stepTime = Math.abs(Math.floor(duration / 100)); // Duration per step
+
+    const timer = setInterval(() => {
+      if (start < end) {
+        start += increment; // Increment if start is less than end
+        if (start >= end) start = end; // Ensure we don't overshoot
+      } else {
+        start -= increment; // Decrement if start is greater than end
+        if (start <= end) start = end; // Ensure we don't undershoot
+      }
+
+      setDisplayedBalance(start);
+
+      if (start === end) {
+        clearInterval(timer); // Stop the interval when we reach the end
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [remainingBalance]);
 
   const handleInputChange = (value) => {
     setInitialAmount(value);
@@ -86,18 +116,16 @@ export default function Page() {
   return (
     <SafeAreaView className="bg-primary h-full">
       {showInput ? (
-        <View className="flex items-center fixed bg-cobalt justify-center  h-1/4">
+        <View className="flex items-center fixed bg-cobalt justify-center h-1/4">
           <Text className="text-white font-extrabold text-center text-2xl">
             Welcome To SpendySense
           </Text>
         </View>
-      ) : (
-        ""
-      )}
+      ) : null}
       <StatusBar backgroundColor="#334166" />
       <View className="flex-1 justify-center items-center">
         {showInput ? (
-          <View className="w-full items-center ">
+          <View className="w-full items-center">
             <FieldInput
               value={initialAmount}
               onChangeText={handleInputChange}
@@ -106,7 +134,7 @@ export default function Page() {
               placeholderTextColor="#ffffff"
               Style="border-2 w-3/4 h-12 bg-cobalt rounded-lg border-cobalt shadow-md px-4 text-lg text-center text-passive"
             />
-            <View className="mt-4 w-3/4 h-12 ">
+            <View className="mt-4 w-3/4 h-12">
               <SubmitButton
                 handleSubmit={handleSubmit}
                 title={"Submit"}
@@ -116,13 +144,13 @@ export default function Page() {
             </View>
           </View>
         ) : (
-          <View className="w-full items-center  fixed top-10 h-full ">
+          <View className="w-full items-center fixed top-10 h-full">
             <View>
-              <Text className="text-cobalt  fixed text-4xl font-bold text-center mb-2">
+              <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
                 Remaining Balance:
               </Text>
               <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-                ${formatNumber(remainingBalance.toFixed(2))}
+                ${formatNumber(displayedBalance.toFixed(2))}
               </Text>
               <View>
                 <SubmitButton
