@@ -7,7 +7,7 @@ module.exports = {
       colors: {
         primary: "#EEEEEE",
         cobalt: "#334166",
-        passive: "#F7B5CA",
+        labosi: "#C8ACD6",
       },
     },
   },

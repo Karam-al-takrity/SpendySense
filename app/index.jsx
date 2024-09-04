@@ -2,22 +2,23 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  StatusBar,
   Modal,
   TouchableOpacity,
   Alert,
   ScrollView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SubmitButton from "../components/reuseable/SubmitButton";
 import FieldInput from "../components/reuseable/FieldInput";
+import { StatusBar } from "expo-status-bar";
 
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-const Item = ({ name, price, onDelete }) => (
+const Item = ({ name, price, onDelete, onEdit }) => (
   <View className="bg-white p-4 m-2 rounded-lg shadow flex-row justify-between items-center">
     <View>
       <Text className="text-lg font-semibold">{name}</Text>
@@ -25,9 +26,20 @@ const Item = ({ name, price, onDelete }) => (
         ${formatNumber(parseFloat(price).toFixed(2))}
       </Text>
     </View>
-    <TouchableOpacity onPress={onDelete} className="bg-red-500 p-2 rounded-lg">
-      <Text className="text-white font-bold">Delete</Text>
-    </TouchableOpacity>
+    <View className="flex-row">
+      <TouchableOpacity
+        onPress={onEdit}
+        className="bg-blue-500 p-2 rounded-lg mr-2"
+      >
+        <Text className="text-white font-bold">Edit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={onDelete}
+        className="bg-red-500 p-2 rounded-lg"
+      >
+        <Text className="text-white font-bold">Delete</Text>
+      </TouchableOpacity>
+    </View>
   </View>
 );
 
@@ -40,6 +52,8 @@ export default function Page() {
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [items, setItems] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentItemId, setCurrentItemId] = useState(null);
 
   useEffect(() => {
     let start = displayedBalance;
@@ -90,15 +104,33 @@ export default function Page() {
   const handleSubmitItem = () => {
     if (itemName && itemPrice && !isNaN(itemPrice)) {
       const price = parseFloat(itemPrice);
-      if (price > remainingBalance) {
+      if (price > remainingBalance && !isEditing) {
         Alert.alert(
           "Insufficient Balance",
           "The item price exceeds your remaining balance."
         );
         return;
       }
-      setItems([...items, { id: Date.now(), name: itemName, price: price }]);
-      setRemainingBalance((prevBalance) => prevBalance - price);
+
+      if (isEditing) {
+        setItems((prevItems) =>
+          prevItems.map((item) =>
+            item.id === currentItemId
+              ? { ...item, name: itemName, price: price }
+              : item
+          )
+        );
+        const previousItem = items.find((item) => item.id === currentItemId);
+        setRemainingBalance(
+          (prevBalance) => prevBalance + previousItem.price - price
+        );
+        setIsEditing(false);
+        setCurrentItemId(null);
+      } else {
+        setItems([...items, { id: Date.now(), name: itemName, price: price }]);
+        setRemainingBalance((prevBalance) => prevBalance - price);
+      }
+
       setItemName("");
       setItemPrice("");
       setShowOverlay(false);
@@ -107,14 +139,32 @@ export default function Page() {
     }
   };
 
+  const handleEditItem = (id) => {
+    const item = items.find((item) => item.id === id);
+    setItemName(item.name);
+    setItemPrice(item.price.toString());
+    setIsEditing(true);
+    setCurrentItemId(id);
+    setShowOverlay(true);
+  };
+
   const handleDeleteItem = (id) => {
     const deletedItem = items.find((item) => item.id === id);
     setItems(items.filter((item) => item.id !== id));
     setRemainingBalance((prevBalance) => prevBalance + deletedItem.price);
   };
 
+  const handleCancelModal = () => {
+    setShowOverlay(false);
+    setItemName("");
+    setItemPrice("");
+    setIsEditing(false);
+    setCurrentItemId(null);
+  };
+
   return (
     <SafeAreaView className="bg-primary h-full">
+      <StatusBar backgroundColor="#334166" style="light" />
       {showInput ? (
         <View className="flex items-center fixed bg-cobalt justify-center h-1/4">
           <Text className="text-white font-extrabold text-center text-2xl">
@@ -122,17 +172,21 @@ export default function Page() {
           </Text>
         </View>
       ) : null}
-      <StatusBar backgroundColor="#334166" />
-      <View className="flex-1 justify-center items-center">
+
+      <View className="flex-1 justify-center items-center ">
         {showInput ? (
-          <View className="w-full items-center">
+          <View
+            className={`w-full items-center ${
+              Platform.OS === "ios" ? "pb-20" : ""
+            }`}
+          >
             <FieldInput
               value={initialAmount}
               onChangeText={handleInputChange}
               keyboardType="numeric"
               placeholder="Enter initial amount"
               placeholderTextColor="#ffffff"
-              Style="border-2 w-3/4 h-12 bg-cobalt rounded-lg border-cobalt shadow-md px-4 text-lg text-center text-passive"
+              Style="border-2 w-3/4 h-12 bg-cobalt rounded-lg border-cobalt shadow-md px-4 text-lg text-center text-labosi"
             />
             <View className="mt-4 w-3/4 h-12">
               <SubmitButton
@@ -144,7 +198,7 @@ export default function Page() {
             </View>
           </View>
         ) : (
-          <View className="w-full items-center fixed top-10 h-full">
+          <View className="w-full items-center fixed top-10 h-full ">
             <View>
               <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
                 Remaining Balance:
@@ -168,6 +222,7 @@ export default function Page() {
                   name={item.name}
                   price={item.price}
                   onDelete={() => handleDeleteItem(item.id)}
+                  onEdit={() => handleEditItem(item.id)}
                 />
               ))}
             </ScrollView>
@@ -181,7 +236,7 @@ export default function Page() {
           onRequestClose={() => setShowOverlay(false)}
         >
           <View
-            className="flex-1 justify-center items-center"
+            className="flex-1 justify-center  items-center"
             style={{
               backgroundColor: "rgba(51, 65, 102, 0.6)",
               backdropFilter: "blur(5px)",
@@ -192,23 +247,23 @@ export default function Page() {
                 value={itemName}
                 onChangeText={setItemName}
                 placeholder="Item Name"
-                Style="border-2 border-gray-300 rounded-lg p-2 mb-4"
+                Style="border-2 border-gray-300 rounded-lg focus:border-black transition-1 p-2 mb-4"
               />
               <FieldInput
                 value={itemPrice}
                 onChangeText={setItemPrice}
                 placeholder="Item Price"
                 keyboardType="numeric"
-                Style="border-2 border-gray-300 rounded-lg p-2 mb-4"
+                Style="border-2 border-gray-300 rounded-lg p-2 mb-4 focus:border-black"
               />
               <SubmitButton
                 handleSubmit={handleSubmitItem}
-                title="Add"
+                title={isEditing ? "Update" : "Add"}
                 backgroundColor={"cobalt"}
                 color="white"
               />
               <TouchableOpacity
-                onPress={() => setShowOverlay(false)}
+                onPress={() => handleCancelModal()}
                 className="mt-4"
               >
                 <Text className="text-center text-red-600 rounded-lg ">
