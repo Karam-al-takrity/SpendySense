@@ -2,8 +2,8 @@ import { View, Text } from "react-native";
 import SubmitButton from "./SubmitButton";
 export default function RemainingBalance({
   formatNumber,
-  displayedBalance,
   handleItem,
+  initialAmount,
 }) {
   return (
     <View>
@@ -11,7 +11,7 @@ export default function RemainingBalance({
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        ${formatNumber(displayedBalance.toFixed(2))}
+        ${formatNumber(initialAmount.toFixed(2))}
         {/* {initialAmount.balance} */}
       </Text>
       <View>

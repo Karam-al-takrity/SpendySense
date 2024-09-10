@@ -7,42 +7,25 @@ import RemainingBalance from "@/components/reuseable/RemainingBalance";
 import AddOverlay from "@/components/reuseable/AddOverlay";
 import { StatusBar } from "expo-status-bar";
 import Item from "@/components/Item/Item";
-// import { addMoney, getBalance } from "@/app/db";
+import {
+  createItem,
+  createBalance,
+  addBalance,
+  getBalance,
+  getItems,
+  updateUser,
+  deleteUser,
+  DeleteDB,
+} from "@/app/db";
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-// const Item = ({ name, price, onDelete, onEdit }) => (
-//   <View className="bg-white p-4 m-2 rounded-lg shadow flex-row justify-between items-center">
-//     <View>
-//       <Text className="text-lg font-semibold">{name}</Text>
-//       <Text className="text-md">
-//         ${formatNumber(parseFloat(price).toFixed(2))}
-//       </Text>
-//     </View>
-//     <View className="flex-row">
-//       <TouchableOpacity
-//         onPress={onEdit}
-//         className="bg-blue-500 p-2 rounded-lg mr-2"
-//       >
-//         <Text className="text-white font-bold">Edit</Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity
-//         onPress={onDelete}
-//         className="bg-red-500 p-2 rounded-lg"
-//       >
-//         <Text className="text-white font-bold">Delete</Text>
-//       </TouchableOpacity>
-//     </View>
-//   </View>
-// );
-
 export default function Page() {
   const [initialAmount, setInitialAmount] = useState("");
   const [remainingBalance, setRemainingBalance] = useState(0);
   const [displayedBalance, setDisplayedBalance] = useState(0);
-  const [showInput, setShowInput] = useState(true);
   const [showOverlay, setShowOverlay] = useState(false);
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
@@ -70,6 +53,7 @@ export default function Page() {
       }
 
       setDisplayedBalance(start);
+      setInitialAmount(start);
 
       if (start === end) {
         clearInterval(timer); // Stop the interval when we reach the end
@@ -80,7 +64,13 @@ export default function Page() {
   };
 
   useEffect(() => {
-    // getAllBalance();
+    //database interactions
+    createItem();
+    createBalance();
+    getBalance();
+    // DeleteDB();
+
+    //
     CounterAnimation();
   }, [remainingBalance]);
 
@@ -106,16 +96,14 @@ export default function Page() {
   return (
     <SafeAreaView className="bg-primary h-full">
       <StatusBar backgroundColor="#334166" style="light" />
-      {showInput ? <WelcomeBanner /> : null}
+      {!initialAmount ? <WelcomeBanner /> : null}
 
       <View className="flex-1 justify-center items-center ">
-        {showInput ? (
+        {!initialAmount ? (
           <Home
-            // handleSubmit={handleSubmit}
             initialAmount={initialAmount}
             setInitialAmount={setInitialAmount}
             setRemainingBalance={setRemainingBalance}
-            setShowInput={setShowInput}
           />
         ) : (
           <View className="w-full items-center fixed top-10 h-full ">
@@ -123,6 +111,7 @@ export default function Page() {
               formatNumber={formatNumber}
               displayedBalance={displayedBalance}
               handleItem={handleItem}
+              initialAmount={initialAmount}
             />
             <ScrollView className="w-full my-10">
               {items.map((item) => (
@@ -132,7 +121,7 @@ export default function Page() {
                   price={item.price}
                   onDelete={() => handleDeleteItem(item.id)}
                   onEdit={() => handleEditItem(item.id)}
-                  formatNumber={() => formatNumber()}
+                  formatNumber={formatNumber}
                 />
               ))}
             </ScrollView>

@@ -1,19 +1,29 @@
-import { View, Platform } from "react-native";
+import React, { useState } from "react";
+import { View, Platform, Alert } from "react-native";
 import FieldInput from "./FieldInput";
 import SubmitButton from "./SubmitButton";
+import { addBalance } from "@/app/db";
 
-export default function home({ initialAmount, setInitialAmount , setRemainingBalance , setShowInput}) {
+export default function Home({
+  initialAmount,
+  setInitialAmount,
+  setRemainingBalance,
+}) {
+  const [inputValue, setInputValue] = useState(initialAmount.toString());
+
   const handleSubmit = async () => {
-    if (initialAmount !== "" && !isNaN(initialAmount)) {
-      setRemainingBalance(parseFloat(initialAmount));
-      setShowInput(false);
-      // await addMoney(initialAmount);
+    if (inputValue !== "" && !isNaN(inputValue)) {
+      const numericValue = parseFloat(inputValue);
+      await addBalance(numericValue);
+      setInitialAmount(numericValue);
+      setRemainingBalance(numericValue);
     } else {
       Alert.alert("Invalid Input", "Please enter a valid number.");
     }
   };
+
   const handleInputChange = (value) => {
-    setInitialAmount(value);
+    setInputValue(value);
   };
 
   return (
@@ -21,7 +31,7 @@ export default function home({ initialAmount, setInitialAmount , setRemainingBal
       className={`w-full items-center ${Platform.OS === "ios" ? "pb-20" : ""}`}
     >
       <FieldInput
-        value={initialAmount}
+        value={inputValue}
         onChangeText={handleInputChange}
         keyboardType="numeric"
         placeholder="Enter initial amount"

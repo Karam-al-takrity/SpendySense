@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TextInput } from "react-native";
 
 function FieldInput({
@@ -8,14 +9,18 @@ function FieldInput({
   placeholderTextColor,
   Style,
 }) {
+  const [plahceHolder, setPlaceHolder] = useState(placeholder);
+
   return (
     <TextInput
       value={value}
       onChangeText={onChangeText}
       keyboardType={keyboardType}
-      placeholder={placeholder}
+      placeholder={plahceHolder}
       placeholderTextColor={placeholderTextColor}
       className={Style}
+      onFocus={() => setPlaceHolder("")}
+      onBlur={() => setPlaceHolder(placeholder)}
     />
   );
 }
