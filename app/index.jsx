@@ -32,6 +32,7 @@ export default function Page() {
   const [items, setItems] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const CounterAnimation = () => {
     let start = displayedBalance;
@@ -78,19 +79,23 @@ export default function Page() {
     setShowOverlay(true);
   };
 
-  const handleEditItem = (id) => {
+  const handleEditItem = async (id) => {
     const item = items.find((item) => item.id === id);
     setItemName(item.name);
-    setItemPrice(item.price.toString());
+    const price = item.price.toString();
+    setItemPrice(price);
     setIsEditing(true);
     setCurrentItemId(id);
     setShowOverlay(true);
   };
 
-  const handleDeleteItem = (id) => {
+  const handleDeleteItem = async (id) => {
+    let newBalance = 0;
     const deletedItem = items.find((item) => item.id === id);
     setItems(items.filter((item) => item.id !== id));
-    setRemainingBalance((prevBalance) => prevBalance + deletedItem.price);
+    newBalance = remainingBalance + deletedItem.price;
+    setRemainingBalance(newBalance);
+    await addBalance(newBalance);
   };
 
   return (
@@ -112,6 +117,7 @@ export default function Page() {
               displayedBalance={displayedBalance}
               handleItem={handleItem}
               initialAmount={initialAmount}
+              shouldRefresh={refreshTrigger}
             />
             <ScrollView className="w-full my-10">
               {items.map((item) => (
@@ -142,6 +148,7 @@ export default function Page() {
           setRemainingBalance={setRemainingBalance}
           currentItemId={currentItemId}
           setCurrentItemId={setCurrentItemId}
+          setShouldRefresh={setRefreshTrigger}
         />
       </View>
     </SafeAreaView>

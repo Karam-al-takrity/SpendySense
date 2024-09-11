@@ -1,6 +1,7 @@
 import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
 import FieldInput from "./FieldInput";
 import SubmitButton from "./SubmitButton";
+import { addBalance } from "@/app/db";
 
 export default function AddOverlay({
   showOverlay,
@@ -17,8 +18,10 @@ export default function AddOverlay({
   setRemainingBalance,
   currentItemId,
   setCurrentItemId,
+  setShouldRefresh,
 }) {
-  const handleSubmitItem = () => {
+  let newBalance = 0;
+  const handleSubmitItem = async () => {
     if (itemName && itemPrice && !isNaN(itemPrice)) {
       const price = parseFloat(itemPrice);
       if (price > remainingBalance && !isEditing) {
@@ -38,18 +41,24 @@ export default function AddOverlay({
           )
         );
         const previousItem = items.find((item) => item.id === currentItemId);
-        setRemainingBalance(
-          (prevBalance) => prevBalance + previousItem.price - price
-        );
+        newBalance = remainingBalance + previousItem.price - price;
+        setRemainingBalance(newBalance);
+        await addBalance(newBalance);
+        setShouldRefresh((prev) => prev + 1);
         setIsEditing(false);
         setCurrentItemId(null);
       } else {
         setItems([...items, { id: Date.now(), name: itemName, price: price }]);
-        setRemainingBalance((prevBalance) => prevBalance - price);
+        newBalance = remainingBalance - price;
+        setRemainingBalance(newBalance);
+        await addBalance(newBalance);
+        setShouldRefresh((prev) => prev + 1);
       }
 
-      setItemName("");
-      setItemPrice("");
+      if (itemName != "") {
+        setItemName("");
+        setItemPrice("");
+      }
       setShowOverlay(false);
     } else {
       Alert.alert("Invalid Input", "Please enter a valid item name and price.");
@@ -58,8 +67,6 @@ export default function AddOverlay({
 
   const handleCancelModal = () => {
     setShowOverlay(false);
-    setItemName("");
-    setItemPrice("");
     setIsEditing(false);
     setCurrentItemId(null);
   };

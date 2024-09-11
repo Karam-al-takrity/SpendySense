@@ -47,7 +47,7 @@ export async function addBalance(balance) {
 
 export async function getBalance() {
   const db = await openDatabase("spendysense.db");
-  const balance = await db.getAllAsync("SELECT * FROM balance");
+  const balance = await db.getFirstAsync("SELECT * FROM balance");
 
   console.log(balance);
 
