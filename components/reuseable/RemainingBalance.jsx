@@ -6,8 +6,8 @@ import { getBalance } from "@/app/db";
 export default function RemainingBalance({
   formatNumber,
   handleItem,
+  handleMoney,
   initialAmount,
-  shouldRefresh, // New prop to trigger balance refresh
 }) {
   const [balance, setBalance] = useState(0);
 
@@ -22,7 +22,7 @@ export default function RemainingBalance({
       }
     }
     fetchBalance();
-  }, [shouldRefresh]); // Add shouldRefresh to the dependency array
+  }, []);
 
   return (
     <View>
@@ -30,13 +30,19 @@ export default function RemainingBalance({
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        $ {formatNumber(balance.toFixed(2))} $
-        {formatNumber(initialAmount.toFixed(2))}
+        ${initialAmount === 0 ? "0" : formatNumber(initialAmount)}
       </Text>
-      <View>
+
+      <View className="flex-row justify-around">
         <SubmitButton
           handleSubmit={handleItem}
           title={"Add Item"}
+          color={"white"}
+          backgroundColor={"cobalt"}
+        />
+        <SubmitButton
+          handleSubmit={handleMoney}
+          title={"Add Money"}
           color={"white"}
           backgroundColor={"cobalt"}
         />

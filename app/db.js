@@ -45,6 +45,17 @@ export async function addBalance(balance) {
   }
 }
 
+export async function addItem(name, price) {
+  const db = await openDatabase("spendysense.db");
+
+  await db.runAsync(
+    "INSERT INTO items (name, price) VALUES (?, ?)",
+    name,
+    price
+  );
+  console.log("Added new Item: " + name + price);
+}
+
 export async function getBalance() {
   const db = await openDatabase("spendysense.db");
   const balance = await db.getFirstAsync("SELECT * FROM balance");
@@ -58,15 +69,21 @@ export async function getItems() {
   const db = await openDatabase("spendysense.db");
   const allItems = await db.getAllAsync("SELECT * FROM items");
 
+  const formattedItems = allItems.map((item) => ({
+    id: item.id,
+    name: item.name,
+    price: item.price,
+  }));
+
   console.log("All items:");
-  allItems.forEach((item) => {
-    console.log(item.id, item.name, item.price);
+  formattedItems.forEach((item) => {
+    console.log(item);
   });
 
-  return allItems;
+  return formattedItems;
 }
 
-export async function updateUser(id, name, price) {
+export async function updateItem(id, name, price) {
   const db = await openDatabase("spendysense.db");
   const result = await db.runAsync(
     "UPDATE items SET name = ?, price = ? WHERE id = ?",
@@ -82,7 +99,7 @@ export async function updateUser(id, name, price) {
   }
 }
 
-export async function deleteUser(id) {
+export async function deleteItem(id) {
   const db = await openDatabase("spendysense.db");
   const result = await db.runAsync("DELETE FROM items WHERE id = ?", id);
 

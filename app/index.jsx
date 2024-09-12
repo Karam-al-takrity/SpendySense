@@ -16,6 +16,7 @@ import {
   updateUser,
   deleteUser,
   DeleteDB,
+  deleteItem,
 } from "@/app/db";
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
@@ -32,14 +33,56 @@ export default function Page() {
   const [items, setItems] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showAdd, setShowAdd] = useState(false);
+  const [numberAdded, setNumberAdded] = useState("");
+  const [addedonBalance, setAddedonBalance] = useState(false);
+
+  const GetInitialBalance = async () => {
+    try {
+      let balancefromDB = 0;
+      let data = await getBalance();
+      balancefromDB = data.money;
+      setInitialAmount(balancefromDB);
+      setRemainingBalance(balancefromDB);
+      setDisplayedBalance(balancefromDB);
+      console.log("Balance Fetched");
+    } catch (error) {
+      console.log("Error: fetching balance");
+    }
+  };
+
+  const GetInitialItems = async () => {
+    try {
+      let itemsFromDB = [];
+      let data = await getItems();
+      itemsFromDB = data;
+
+      // Assuming you have these state setters defined in your component
+      setItems(itemsFromDB);
+
+      console.log("Items fetched successfully:", itemsFromDB);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      // Optionally, you can set an error state here
+      // setError("Failed to fetch items");
+    }
+  };
+
+  handleAddBalance = async () => {
+    let balancefromDB = 0;
+    let data = await getBalance();
+    balancefromDB = data.money;
+    let money = Number(balancefromDB) + Number(numberAdded);
+    await addBalance(money);
+    setShowAdd(false);
+  };
 
   const CounterAnimation = () => {
     let start = displayedBalance;
     const end = remainingBalance;
     if (start === end) return;
 
-    const duration = 1000; // Total duration of the animation in milliseconds
+    const duration = 10; // Total duration of the animation in milliseconds
     const range = Math.abs(end - start); // Total amount to count
     const increment = Math.ceil(range / 100); // Increment value
     const stepTime = Math.abs(Math.floor(duration / 100)); // Duration per step
@@ -53,7 +96,7 @@ export default function Page() {
         if (start <= end) start = end; // Ensure we don't undershoot
       }
 
-      setDisplayedBalance(start);
+      // setDisplayedBalance(start);
       setInitialAmount(start);
 
       if (start === end) {
@@ -68,15 +111,23 @@ export default function Page() {
     //database interactions
     createItem();
     createBalance();
+    GetInitialBalance();
     getBalance();
+    GetInitialItems();
+    // getItems();
     // DeleteDB();
 
     //
     CounterAnimation();
-  }, [remainingBalance]);
+    setAddedonBalance(false);
+    console.log("this got hit");
+  }, [remainingBalance, addedonBalance]);
 
   const handleItem = () => {
     setShowOverlay(true);
+  };
+  const handleMoney = () => {
+    setShowAdd(true);
   };
 
   const handleEditItem = async (id) => {
@@ -92,6 +143,7 @@ export default function Page() {
   const handleDeleteItem = async (id) => {
     let newBalance = 0;
     const deletedItem = items.find((item) => item.id === id);
+    await deleteItem(id);
     setItems(items.filter((item) => item.id !== id));
     newBalance = remainingBalance + deletedItem.price;
     setRemainingBalance(newBalance);
@@ -101,10 +153,16 @@ export default function Page() {
   return (
     <SafeAreaView className="bg-primary h-full">
       <StatusBar backgroundColor="#334166" style="light" />
-      {!initialAmount ? <WelcomeBanner /> : null}
+      {initialAmount === null ||
+      initialAmount === undefined ||
+      initialAmount === "" ? (
+        <WelcomeBanner />
+      ) : null}
 
       <View className="flex-1 justify-center items-center ">
-        {!initialAmount ? (
+        {initialAmount === null ||
+        initialAmount === undefined ||
+        initialAmount === "" ? (
           <Home
             initialAmount={initialAmount}
             setInitialAmount={setInitialAmount}
@@ -117,7 +175,7 @@ export default function Page() {
               displayedBalance={displayedBalance}
               handleItem={handleItem}
               initialAmount={initialAmount}
-              shouldRefresh={refreshTrigger}
+              handleMoney={handleMoney}
             />
             <ScrollView className="w-full my-10">
               {items.map((item) => (
@@ -148,7 +206,12 @@ export default function Page() {
           setRemainingBalance={setRemainingBalance}
           currentItemId={currentItemId}
           setCurrentItemId={setCurrentItemId}
-          setShouldRefresh={setRefreshTrigger}
+          showAdd={showAdd}
+          setShowAdd={setShowAdd}
+          numberAdded={numberAdded}
+          setNumberAdded={setNumberAdded}
+          GetInitialBalance={GetInitialBalance}
+          setAddedonBalance={setAddedonBalance}
         />
       </View>
     </SafeAreaView>

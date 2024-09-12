@@ -1,7 +1,8 @@
 import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
 import FieldInput from "./FieldInput";
 import SubmitButton from "./SubmitButton";
-import { addBalance } from "@/app/db";
+import { addBalance, addItem, getBalance, updateItem } from "@/app/db";
+import { useState } from "react";
 
 export default function AddOverlay({
   showOverlay,
@@ -18,7 +19,11 @@ export default function AddOverlay({
   setRemainingBalance,
   currentItemId,
   setCurrentItemId,
-  setShouldRefresh,
+  showAdd,
+  setShowAdd,
+  numberAdded,
+  setNumberAdded,
+  setAddedonBalance,
 }) {
   let newBalance = 0;
   const handleSubmitItem = async () => {
@@ -41,18 +46,20 @@ export default function AddOverlay({
           )
         );
         const previousItem = items.find((item) => item.id === currentItemId);
+        console.log("labosi id is :", currentItemId);
+        await updateItem(currentItemId, itemName, price);
+
         newBalance = remainingBalance + previousItem.price - price;
         setRemainingBalance(newBalance);
         await addBalance(newBalance);
-        setShouldRefresh((prev) => prev + 1);
         setIsEditing(false);
         setCurrentItemId(null);
       } else {
         setItems([...items, { id: Date.now(), name: itemName, price: price }]);
+        addItem(itemName, itemPrice);
         newBalance = remainingBalance - price;
         setRemainingBalance(newBalance);
         await addBalance(newBalance);
-        setShouldRefresh((prev) => prev + 1);
       }
 
       if (itemName != "") {
@@ -71,48 +78,106 @@ export default function AddOverlay({
     setCurrentItemId(null);
   };
 
+  const handleAddBalance = async () => {
+    let balancefromDB = 0;
+    let data = await getBalance();
+    balancefromDB = data.money;
+    let money = Number(balancefromDB) + Number(numberAdded);
+    await addBalance(money);
+    setAddedonBalance(true);
+    setNumberAdded("");
+    setShowAdd(false);
+  };
+
+  const handleCancelBalance = () => {
+    setShowAdd(false);
+    setNumberAdded("");
+  };
+
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={showOverlay}
-      onRequestClose={() => setShowOverlay(false)}
-    >
-      <View
-        className="flex-1 justify-center  items-center"
-        style={{
-          backgroundColor: "rgba(51, 65, 102, 0.6)",
-          backdropFilter: "blur(5px)",
-        }}
+    <View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showOverlay}
+        onRequestClose={() => setShowOverlay(false)}
       >
-        <View className="bg-white p-6 rounded-lg w-4/5 shadow-lg">
-          <FieldInput
-            value={itemName}
-            onChangeText={setItemName}
-            placeholder="Item Name"
-            Style="border-2 border-gray-300 rounded-lg focus:border-black transition-1 p-2 mb-4"
-          />
-          <FieldInput
-            value={itemPrice}
-            onChangeText={setItemPrice}
-            placeholder="Item Price"
-            keyboardType="numeric"
-            Style="border-2 border-gray-300 rounded-lg p-2 mb-4 focus:border-black"
-          />
-          <SubmitButton
-            handleSubmit={handleSubmitItem}
-            title={isEditing ? "Update" : "Add"}
-            backgroundColor={"cobalt"}
-            color="white"
-          />
-          <TouchableOpacity
-            onPress={() => handleCancelModal()}
-            className="mt-4"
-          >
-            <Text className="text-center text-red-600 rounded-lg ">Cancel</Text>
-          </TouchableOpacity>
+        <View
+          className="flex-1 justify-center  items-center"
+          style={{
+            backgroundColor: "rgba(51, 65, 102, 0.6)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <View className="bg-white p-6 rounded-lg w-4/5 shadow-lg">
+            <FieldInput
+              value={itemName}
+              onChangeText={setItemName}
+              placeholder="Item Name"
+              Style="border-2 border-gray-300 rounded-lg focus:border-black transition-1 p-2 mb-4"
+            />
+            <FieldInput
+              value={itemPrice}
+              onChangeText={setItemPrice}
+              placeholder="Item Price"
+              keyboardType="numeric"
+              Style="border-2 border-gray-300 rounded-lg p-2 mb-4 focus:border-black"
+            />
+            <SubmitButton
+              handleSubmit={handleSubmitItem}
+              title={isEditing ? "Update" : "Add"}
+              backgroundColor={"cobalt"}
+              color="white"
+            />
+            <TouchableOpacity
+              onPress={() => handleCancelModal()}
+              className="mt-4"
+            >
+              <Text className="text-center text-red-600 rounded-lg ">
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showAdd}
+        onRequestClose={() => setShowAdd(false)}
+      >
+        <View
+          className="flex-1 justify-center  items-center"
+          style={{
+            backgroundColor: "rgba(51, 65, 102, 0.6)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <View className="bg-white p-6 rounded-lg w-4/5 shadow-lg">
+            <FieldInput
+              value={numberAdded}
+              onChangeText={setNumberAdded}
+              placeholder="labosi"
+              keyboardType="numeric"
+              Style="border-2 border-gray-300 rounded-lg p-2 mb-4 focus:border-black"
+            />
+            <SubmitButton
+              handleSubmit={handleAddBalance}
+              title="Add"
+              backgroundColor={"cobalt"}
+              color="white"
+            />
+            <TouchableOpacity
+              onPress={() => handleCancelBalance()}
+              className="mt-4"
+            >
+              <Text className="text-center text-red-600 rounded-lg ">
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
