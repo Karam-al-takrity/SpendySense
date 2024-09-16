@@ -10,7 +10,7 @@ export default function RemainingBalance({
   initialAmount,
 }) {
   const [balance, setBalance] = useState(0);
-
+  const [displayedBalance, setDisplayedBalance] = useState(0);
   useEffect(() => {
     async function fetchBalance() {
       try {
@@ -24,13 +24,36 @@ export default function RemainingBalance({
     fetchBalance();
   }, []);
 
+  useEffect(() => {
+    const duration = 1000; // Total animation duration in ms
+    const steps = 20; // Number of animation steps
+    const stepDuration = duration / steps; // Interval between updates
+    const increment = (initialAmount - displayedBalance) / steps; // Step size
+
+    const interval = setInterval(() => {
+      setDisplayedBalance((prev) => {
+        if (
+          (increment > 0 && prev < initialAmount) || // Increasing case
+          (increment < 0 && prev > initialAmount) // Decreasing case
+        ) {
+          return prev + increment;
+        } else {
+          clearInterval(interval); // Stop the animation when target is reached
+          return initialAmount; // Set to exact amount
+        }
+      });
+    }, stepDuration);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [initialAmount]);
+
   return (
     <View>
       <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        ${initialAmount === 0 ? "0" : formatNumber(initialAmount)}
+        ${initialAmount === 0 ? "0" : formatNumber(displayedBalance.toFixed(2))}
       </Text>
 
       <View className="flex-row justify-around">

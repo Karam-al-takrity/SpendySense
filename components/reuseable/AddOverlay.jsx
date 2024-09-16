@@ -46,7 +46,6 @@ export default function AddOverlay({
           )
         );
         const previousItem = items.find((item) => item.id === currentItemId);
-        console.log("labosi id is :", currentItemId);
         await updateItem(currentItemId, itemName, price);
 
         newBalance = remainingBalance + previousItem.price - price;
@@ -76,6 +75,8 @@ export default function AddOverlay({
     setShowOverlay(false);
     setIsEditing(false);
     setCurrentItemId(null);
+    setItemName("");
+    setItemPrice("");
   };
 
   const handleAddBalance = async () => {

@@ -11,7 +11,8 @@ export async function createItem() {
       CREATE TABLE IF NOT EXISTS items (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
-          price INTEGER NOT NULL
+          price INTEGER NOT NULL,
+          date DATE DEFAULT (DATE('now'))
       );
   `);
   console.log("Items table created or already exists.");
@@ -73,6 +74,7 @@ export async function getItems() {
     id: item.id,
     name: item.name,
     price: item.price,
+    date: item.date,
   }));
 
   console.log("All items:");

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, ScrollView } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Home from "@/components/reuseable/Home";
 import WelcomeBanner from "@/components/reuseable/WelcomeBanner";
@@ -7,17 +7,18 @@ import RemainingBalance from "@/components/reuseable/RemainingBalance";
 import AddOverlay from "@/components/reuseable/AddOverlay";
 import { StatusBar } from "expo-status-bar";
 import Item from "@/components/Item/Item";
+import TrashButton from "@/components/reuseable/TrashButton";
 import {
   createItem,
   createBalance,
   addBalance,
   getBalance,
   getItems,
-  updateUser,
-  deleteUser,
-  DeleteDB,
   deleteItem,
+  DeleteDB,
 } from "@/app/db";
+import FieldInput from "@/components/reuseable/FieldInput";
+import SubmitButton from "@/components/reuseable/SubmitButton";
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -112,15 +113,12 @@ export default function Page() {
     createItem();
     createBalance();
     GetInitialBalance();
-    getBalance();
     GetInitialItems();
-    // getItems();
+    setAddedonBalance(false);
+    // CounterAnimation();
     // DeleteDB();
 
     //
-    CounterAnimation();
-    setAddedonBalance(false);
-    console.log("this got hit");
   }, [remainingBalance, addedonBalance]);
 
   const handleItem = () => {
@@ -169,26 +167,34 @@ export default function Page() {
             setRemainingBalance={setRemainingBalance}
           />
         ) : (
-          <View className="w-full items-center fixed top-10 h-full ">
-            <RemainingBalance
-              formatNumber={formatNumber}
-              displayedBalance={displayedBalance}
-              handleItem={handleItem}
-              initialAmount={initialAmount}
-              handleMoney={handleMoney}
-            />
+          <View className="w-full items-center fixed   h-full ">
+            <View className="mt-4">
+              <RemainingBalance
+                formatNumber={formatNumber}
+                displayedBalance={displayedBalance}
+                handleItem={handleItem}
+                initialAmount={initialAmount}
+                handleMoney={handleMoney}
+                CounterAnimation={CounterAnimation}
+              />
+            </View>
+
             <ScrollView className="w-full my-10">
               {items.map((item) => (
                 <Item
                   key={item.id}
                   name={item.name}
                   price={item.price}
+                  date={item.date}
                   onDelete={() => handleDeleteItem(item.id)}
                   onEdit={() => handleEditItem(item.id)}
                   formatNumber={formatNumber}
                 />
               ))}
             </ScrollView>
+            <View className="">
+              <TrashButton />
+            </View>
           </View>
         )}
         <AddOverlay
