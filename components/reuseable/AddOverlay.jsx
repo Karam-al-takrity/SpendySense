@@ -2,7 +2,6 @@ import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
 import FieldInput from "./FieldInput";
 import SubmitButton from "./SubmitButton";
 import { addBalance, addItem, getBalance, updateItem } from "@/app/db";
-import { useState } from "react";
 
 export default function AddOverlay({
   showOverlay,

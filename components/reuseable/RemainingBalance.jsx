@@ -4,7 +4,7 @@ import SubmitButton from "./SubmitButton";
 import { getBalance } from "@/app/db";
 
 export default function RemainingBalance({
-  formatNumber,
+  // formatNumber,
   handleItem,
   handleMoney,
   initialAmount,
@@ -53,7 +53,8 @@ export default function RemainingBalance({
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        ${initialAmount === 0 ? "0" : formatNumber(displayedBalance.toFixed(2))}
+        {/* ${initialAmount === 0 ? "0" : formatNumber(displayedBalance.toFixed(2))} */}
+        ${initialAmount === 0 ? "0" : displayedBalance.toFixed(2)}
       </Text>
 
       <View className="flex-row justify-around">

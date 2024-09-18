@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Text, TouchableOpacity } from "react-native";
+import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Home from "@/components/reuseable/Home";
 import WelcomeBanner from "@/components/reuseable/WelcomeBanner";
@@ -15,14 +15,12 @@ import {
   getBalance,
   getItems,
   deleteItem,
-  DeleteDB,
 } from "@/app/db";
-import FieldInput from "@/components/reuseable/FieldInput";
-import SubmitButton from "@/components/reuseable/SubmitButton";
-const formatNumber = (number) => {
-  if (isNaN(number)) return number;
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+
+// const formatNumber = (number) => {
+//   if (isNaN(number)) return number;
+//   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// };
 
 export default function Page() {
   const [initialAmount, setInitialAmount] = useState("");
@@ -58,14 +56,11 @@ export default function Page() {
       let data = await getItems();
       itemsFromDB = data;
 
-      // Assuming you have these state setters defined in your component
       setItems(itemsFromDB);
 
       console.log("Items fetched successfully:", itemsFromDB);
     } catch (error) {
       console.error("Error fetching items:", error);
-      // Optionally, you can set an error state here
-      // setError("Failed to fetch items");
     }
   };
 
@@ -78,36 +73,6 @@ export default function Page() {
     setShowAdd(false);
   };
 
-  const CounterAnimation = () => {
-    let start = displayedBalance;
-    const end = remainingBalance;
-    if (start === end) return;
-
-    const duration = 10; // Total duration of the animation in milliseconds
-    const range = Math.abs(end - start); // Total amount to count
-    const increment = Math.ceil(range / 100); // Increment value
-    const stepTime = Math.abs(Math.floor(duration / 100)); // Duration per step
-
-    const timer = setInterval(() => {
-      if (start < end) {
-        start += increment; // Increment if start is less than end
-        if (start >= end) start = end; // Ensure we don't overshoot
-      } else {
-        start -= increment; // Decrement if start is greater than end
-        if (start <= end) start = end; // Ensure we don't undershoot
-      }
-
-      // setDisplayedBalance(start);
-      setInitialAmount(start);
-
-      if (start === end) {
-        clearInterval(timer); // Stop the interval when we reach the end
-      }
-    }, stepTime);
-
-    return () => clearInterval(timer);
-  };
-
   useEffect(() => {
     //database interactions
     createItem();
@@ -115,15 +80,12 @@ export default function Page() {
     GetInitialBalance();
     GetInitialItems();
     setAddedonBalance(false);
-    // CounterAnimation();
-    // DeleteDB();
-
-    //
   }, [remainingBalance, addedonBalance]);
 
   const handleItem = () => {
     setShowOverlay(true);
   };
+
   const handleMoney = () => {
     setShowAdd(true);
   };
@@ -155,7 +117,9 @@ export default function Page() {
       initialAmount === undefined ||
       initialAmount === "" ? (
         <WelcomeBanner />
-      ) : null}
+      ) : (
+        ""
+      )}
 
       <View className="flex-1 justify-center items-center ">
         {initialAmount === null ||
@@ -170,12 +134,10 @@ export default function Page() {
           <View className="w-full items-center fixed   h-full ">
             <View className="mt-4">
               <RemainingBalance
-                formatNumber={formatNumber}
-                displayedBalance={displayedBalance}
+                // formatNumber={formatNumber}
                 handleItem={handleItem}
                 initialAmount={initialAmount}
                 handleMoney={handleMoney}
-                CounterAnimation={CounterAnimation}
               />
             </View>
 
@@ -188,7 +150,7 @@ export default function Page() {
                   date={item.date}
                   onDelete={() => handleDeleteItem(item.id)}
                   onEdit={() => handleEditItem(item.id)}
-                  formatNumber={formatNumber}
+                  // formatNumber={formatNumber}
                 />
               ))}
             </ScrollView>
@@ -216,7 +178,6 @@ export default function Page() {
           setShowAdd={setShowAdd}
           numberAdded={numberAdded}
           setNumberAdded={setNumberAdded}
-          GetInitialBalance={GetInitialBalance}
           setAddedonBalance={setAddedonBalance}
         />
       </View>
