@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import { View, Platform, Alert } from "react-native";
 import FieldInput from "./FieldInput";
 import SubmitButton from "./SubmitButton";
-import { addBalance } from "@/app/db";
+import { addBalance } from "@/backend/db";
 
-export default function Home({
-  initialAmount,
-  setInitialAmount,
-  setRemainingBalance,
-}) {
+export default function Home() {
   const [inputValue, setInputValue] = useState(initialAmount.toString());
 
   const handleSubmit = async () => {

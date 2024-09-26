@@ -6,7 +6,7 @@ function FieldInput({
   onChangeText,
   keyboardType,
   placeholder,
-  placeholderTextColor,
+  placeholderTextColor = "grey",
   Style,
 }) {
   const [plahceHolder, setPlaceHolder] = useState(placeholder);

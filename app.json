@@ -22,7 +22,7 @@
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#334166"
       },
       "package": "labosi.spendysense"
     },

@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons"; // Using AntDesign for the trash can icon
-import { DeleteDB } from "@/app/db";
+import { DeleteDB } from "@/backend/db";
 import * as Updates from "expo-updates";
 
 const TrashButton = () => {

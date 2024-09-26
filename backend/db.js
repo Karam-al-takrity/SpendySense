@@ -128,7 +128,7 @@ export async function DeleteDB() {
       // Delete the database file
       await FileSystem.deleteAsync(dbPath);
       console.log("Database deleted successfully.");
-      Alert.alert("Success", "Database deleted successfully.");
+      Alert.alert("Success", "Deleted successfully.");
     } else {
       console.log("Database does not exist.");
       Alert.alert("Error", "Database does not exist.");

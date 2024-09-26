@@ -1,13 +1,15 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 
-function Item({ name, price, date, onDelete, onEdit }) {
+function Item({ name, price, date, onDelete, onEdit, formatNumber }) {
   return (
     <View className="bg-white flex flex-row p-4 m-2 rounded-lg shadow  justify-between items-center">
       <View className="flex flex-row  w-[60%] justify-between">
         <View className="flex flex-col ">
           <Text className="text-lg font-semibold">{name}</Text>
-          <Text className="text-md">${parseFloat(price).toFixed(2)}</Text>
+          <Text className="text-md">
+            ${formatNumber(parseFloat(price).toFixed(2))}
+          </Text>
         </View>
         <Text className="text-xs h-8 mt-2 font-semibold text-gray-800 bg-gray-200 p-2 rounded-lg shadow-sm">
           {date}
