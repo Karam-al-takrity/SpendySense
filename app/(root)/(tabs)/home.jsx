@@ -51,7 +51,7 @@ export default function Page() {
     // DeleteDB();
   }, [remainingBalance]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(initialAmount);
 
     // if (inputValue !== "" && !isNaN(inputValue)) {
@@ -62,7 +62,7 @@ export default function Page() {
     // } else {
     //   Alert.alert("Invalid Input", "Please enter a valid number.");
     // }
-    addBalance(initialAmount);
+    await addBalance(initialAmount);
     if (initialAmount !== undefined && initialAmount !== null)
       router.push("/(root)/(tabs)/balance");
   };

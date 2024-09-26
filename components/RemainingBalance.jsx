@@ -14,7 +14,6 @@ export default function RemainingBalance({
   initialAmount,
 }) {
   const [balance, setBalance] = useState(0);
-  const [displayedBalance, setDisplayedBalance] = useState(0);
   // useEffect(() => {
   //   async function fetchBalance() {
   //     try {
@@ -52,12 +51,12 @@ export default function RemainingBalance({
   // }, [initialAmount]);
 
   return (
-    <View className="mt-10">
+    <View className="">
       <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        ${initialAmount === 0 ? "0" : formatNumber(displayedBalance)}
+        ${initialAmount === 0 ? "0" : formatNumber(initialAmount)}
       </Text>
 
       <View className="flex-row justify-around">

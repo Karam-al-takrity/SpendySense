@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, ScrollView, Alert } from "react-native";
+import { Text, View, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Item from "@/components/Item/Item";
 import AddItem from "@/components/AddItem";
@@ -11,6 +11,7 @@ import {
   getBalance,
   getItems,
   setItems,
+  addItem,
   deleteItem,
 } from "@/backend/db";
 import SubmitButton from "@/components/SubmitButton";
@@ -22,10 +23,10 @@ const formatNumber = (number) => {
 };
 
 const balance = () => {
-  const [initialAmount, setInitialAmount] = useState();
+  const [initialAmount, setInitialAmount] = useState("");
+  const [moneyAdded, setMoneyAdded] = useState(false);
 
   const [remainingBalance, setRemainingBalance] = useState(0);
-  const [addedonBalance, setAddedonBalance] = useState();
   const [showOverlay, setShowOverlay] = useState(false);
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
@@ -34,16 +35,20 @@ const balance = () => {
   const [currentItemId, setCurrentItemId] = useState(null);
   const [showaddMoney, setShowaddMoney] = useState(false);
   const [numberAdded, setNumberAdded] = useState("");
-  // const [addedonBalance, setAddedonBalance] = useState(false);
+
+  const MoneyAdded = () => {
+    setMoneyAdded(false);
+  };
 
   useEffect(() => {
-    GetInitialBalance();
-    GetInitialItems();
-  }, [addedonBalance]);
+    GetBalance();
+    GetItems();
+    MoneyAdded();
+  }, [moneyAdded]);
 
   let newBalance = 0;
 
-  const GetInitialBalance = async () => {
+  const GetBalance = async () => {
     try {
       let balancefromDB = 0;
       let data = await getBalance();
@@ -57,7 +62,7 @@ const balance = () => {
     }
   };
 
-  const GetInitialItems = async () => {
+  const GetItems = async () => {
     try {
       let itemsFromDB = [];
       let data = await getItems();
@@ -74,7 +79,7 @@ const balance = () => {
   const handleSubmitItem = async () => {
     if (itemName && itemPrice && !isNaN(itemPrice)) {
       const price = parseFloat(itemPrice);
-      if (price > remainingBalance && !isEditing) {
+      if (price > initialAmount && !isEditing) {
         Alert.alert(
           "Insufficient Balance",
           "The item price exceeds your remaining balance."
@@ -93,7 +98,7 @@ const balance = () => {
         const previousItem = items.find((item) => item.id === currentItemId);
         await updateItem(currentItemId, itemName, price);
 
-        newBalance = remainingBalance + previousItem.price - price;
+        newBalance = initialAmount + previousItem.price - price;
         await addBalance(newBalance);
         setRemainingBalance(newBalance);
         setAddedonBalance(true);
@@ -101,9 +106,9 @@ const balance = () => {
         setCurrentItemId(null);
       } else {
         setItems([...items, { id: Date.now(), name: itemName, price: price }]);
-        addItem(itemName, itemPrice);
-        newBalance = remainingBalance - price;
-        setRemainingBalance(newBalance);
+        await addItem(itemName, itemPrice);
+        newBalance = initialAmount - price;
+        setInitialAmount(newBalance);
         await addBalance(newBalance);
       }
 
@@ -122,8 +127,9 @@ const balance = () => {
     let data = await getBalance();
     balancefromDB = data.money;
     let money = Number(balancefromDB) + Number(numberAdded);
-    setInitialAmount(balancefromDB);
     await addBalance(money);
+    setInitialAmount(balancefromDB);
+    setMoneyAdded(true);
     setShowaddMoney(false);
     setNumberAdded("");
   };
@@ -160,7 +166,7 @@ const balance = () => {
     <SafeAreaView>
       <StatusBar backgroundColor="#334166" style="light" />
       <View className="mt-10">
-        <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
+        {/* <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
           Remaining Balance:
         </Text>
         <Text className="text-cobalt text-4xl font-bold text-center mb-4">
@@ -180,7 +186,13 @@ const balance = () => {
             color={"white"}
             backgroundColor={"cobalt"}
           />
-        </View>
+        </View> */}
+        <RemainingBalance
+          initialAmount={initialAmount}
+          handleItem={handleItem}
+          handleMoney={handleMoney}
+        />
+
         <AddMoney
           isShow={showaddMoney}
           setShowaddMoney={setShowaddMoney}
@@ -198,9 +210,12 @@ const balance = () => {
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           handleSubmitItem={handleSubmitItem}
+          setCurrentItemId={setCurrentItemId}
         />
-        <ScrollView className="w-full my-10">
-          {items.map((item) => (
+
+        <FlatList
+          className="w-full mt-10 max-h-[62%] "
+          renderItem={({ item }) => (
             <Item
               key={item.id}
               name={item.name}
@@ -208,11 +223,12 @@ const balance = () => {
               date={item.date}
               onDelete={() => handleDeleteItem(item.id)}
               onEdit={() => handleEditItem(item.id)}
-              // formatNumber={formatNumber}
+              formatNumber={formatNumber}
             />
-          ))}
-        </ScrollView>
-        <View className="flex items-center justify-center flex-col h-[90%]">
+          )}
+          data={items}
+        />
+        <View className="flex items-center justify-center mt-2">
           <TrashButton />
         </View>
       </View>
