@@ -1,26 +1,3 @@
-// import { router } from "expo-router";
-// import { TouchableOpacity } from "react-native";
-// import { Text, View } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-
-// const home = () => {
-//   return (
-//     <SafeAreaView>
-//       <Text>Home Page</Text>
-//       <TouchableOpacity
-//         className=""
-//         onPress={() => {
-//           router.push("/(root)/(tabs)/balance");
-//         }}
-//       >
-//         <Text className="">labosi</Text>
-//       </TouchableOpacity>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default home;
-
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -41,7 +18,6 @@ import {
 export default function Page() {
   const [initialAmount, setInitialAmount] = useState();
   const [remainingBalance, setRemainingBalance] = useState(0);
-  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     //database interactions
@@ -52,16 +28,6 @@ export default function Page() {
   }, [remainingBalance]);
 
   const handleSubmit = async () => {
-    console.log(initialAmount);
-
-    // if (inputValue !== "" && !isNaN(inputValue)) {
-    //   const numericValue = parseFloat(inputValue);
-    //   await addBalance(numericValue);
-    //   setInitialAmount(numericValue);
-    //   setRemainingBalance(numericValue);
-    // } else {
-    //   Alert.alert("Invalid Input", "Please enter a valid number.");
-    // }
     await addBalance(initialAmount);
     if (initialAmount !== undefined && initialAmount !== null)
       router.push("/(root)/(tabs)/balance");

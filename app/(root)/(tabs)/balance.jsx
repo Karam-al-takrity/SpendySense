@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, Alert, FlatList } from "react-native";
+import { View, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Item from "@/components/Item/Item";
 import AddItem from "@/components/AddItem";
@@ -10,11 +10,10 @@ import {
   addBalance,
   getBalance,
   getItems,
-  setItems,
   addItem,
+  updateItem,
   deleteItem,
 } from "@/backend/db";
-import SubmitButton from "@/components/SubmitButton";
 import { StatusBar } from "expo-status-bar";
 
 const formatNumber = (number) => {
@@ -54,8 +53,6 @@ const balance = () => {
       let data = await getBalance();
       balancefromDB = data.money;
       setInitialAmount(balancefromDB);
-      // setRemainingBalance(balancefromDB);
-      // setDisplayedBalance(balancefromDB);
       console.log("Balance Fetched");
     } catch (error) {
       console.log("Error: fetching balance");
@@ -100,8 +97,8 @@ const balance = () => {
 
         newBalance = initialAmount + previousItem.price - price;
         await addBalance(newBalance);
+        await GetBalance();
         setRemainingBalance(newBalance);
-        setAddedonBalance(true);
         setIsEditing(false);
         setCurrentItemId(null);
       } else {
@@ -109,6 +106,7 @@ const balance = () => {
         await addItem(itemName, itemPrice);
         newBalance = initialAmount - price;
         setInitialAmount(newBalance);
+        await GetItems();
         await addBalance(newBalance);
       }
 
@@ -157,8 +155,8 @@ const balance = () => {
     const deletedItem = items.find((item) => item.id === id);
     await deleteItem(id);
     setItems(items.filter((item) => item.id !== id));
-    newBalance = remainingBalance + deletedItem.price;
-    setRemainingBalance(newBalance);
+    newBalance = initialAmount + deletedItem.price;
+    setInitialAmount(newBalance);
     await addBalance(newBalance);
   };
 
@@ -166,29 +164,9 @@ const balance = () => {
     <SafeAreaView>
       <StatusBar backgroundColor="#334166" style="light" />
       <View className="mt-10">
-        {/* <Text className="text-cobalt fixed text-4xl font-bold text-center mb-2">
-          Remaining Balance:
-        </Text>
-        <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-          ${initialAmount === 0 ? "0" : formatNumber(initialAmount)}
-        </Text>
-
-        <View className="flex-row justify-around">
-          <SubmitButton
-            handleSubmit={handleItem}
-            title={"Add Item"}
-            color={"white"}
-            backgroundColor={"cobalt"}
-          />
-          <SubmitButton
-            handleSubmit={handleMoney}
-            title={"Add Money"}
-            color={"white"}
-            backgroundColor={"cobalt"}
-          />
-        </View> */}
         <RemainingBalance
           initialAmount={initialAmount}
+          setInitialAmount={setInitialAmount}
           handleItem={handleItem}
           handleMoney={handleMoney}
         />
