@@ -5,7 +5,7 @@ function Item({ name, price, date, onDelete, onEdit, formatNumber }) {
   return (
     <View className="bg-white flex flex-row p-4 m-2 rounded-lg shadow  justify-between items-center">
       <View className="flex flex-row  w-[60%] justify-between">
-        <View className="flex flex-col ">
+        <View className="flex flex-col max-w-[55%]">
           <Text className="text-lg font-semibold">{name}</Text>
           <Text className="text-md">
             ${formatNumber(parseFloat(price).toFixed(2))}

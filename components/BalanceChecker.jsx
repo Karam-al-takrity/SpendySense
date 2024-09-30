@@ -1,16 +1,20 @@
 import { getBalance } from "@/backend/db";
+import { createBalance, createItem } from "@/backend/db";
 import { useEffect } from "react";
 
 const BalanceChecker = () => {
+  let labosi = false;
   useEffect(() => {
+    createBalance();
+    createItem();
     const fetchBalance = async () => {
       try {
         const balanceData = await getBalance();
 
-        if (balanceData !== undefined || balanceData !== null) {
-          return true;
+        if (balanceData === undefined || balanceData === null) {
+          labosi = false;
         } else {
-          return false;
+          labosi = true;
         }
       } catch (error) {
         console.error("Error fetching balance:", error);
@@ -20,7 +24,7 @@ const BalanceChecker = () => {
     fetchBalance();
   }, []);
 
-  return BalanceChecker;
+  return labosi;
 };
 
 export default BalanceChecker;

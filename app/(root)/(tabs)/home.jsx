@@ -21,10 +21,9 @@ export default function Page() {
 
   useEffect(() => {
     //database interactions
-    createBalance();
-    createItem();
+    // createBalance();
+    // createItem();
     getBalance();
-    // DeleteDB();
   }, [remainingBalance]);
 
   const handleSubmit = async () => {

@@ -10,7 +10,6 @@ export default function RemainingBalance({
   handleItem,
   handleMoney,
   initialAmount,
-  setInitialAmount,
 }) {
   const [displayedBalance, setDisplayedBalance] = useState(0);
 
@@ -43,7 +42,10 @@ export default function RemainingBalance({
         Remaining Balance:
       </Text>
       <Text className="text-cobalt text-4xl font-bold text-center mb-4">
-        ${initialAmount === 0 ? "0" : displayedBalance.toFixed(2)}
+        {/* ${initialAmount === 0 ? "0" : formatNumber(displayedBalance.toFixed(2))} */}
+        {displayedBalance
+          ? `$${formatNumber(displayedBalance.toFixed(2))}`
+          : "No Balance"}
       </Text>
 
       <View className="flex-row justify-around">

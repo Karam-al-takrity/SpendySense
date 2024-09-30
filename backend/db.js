@@ -21,7 +21,7 @@ export async function createItem() {
 export async function createBalance() {
   const db = await openDatabase("spendysense.db");
   await db.execAsync(
-    "CREATE TABLE IF NOT EXISTS balance (id INTEGER PRIMARY KEY AUTOINCREMENT,money INTEGER NOT NULL);"
+    "CREATE TABLE IF NOT EXISTS balance (id INTEGER PRIMARY KEY AUTOINCREMENT,money FLOAT NOT NULL);"
   );
   console.log("Balance table created or already exists.");
 }
