@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Text, View, Pressable } from "react-native";
 
-const Popup = ({ setModalVisible, modalVisible, handeDelete }) => {
+const Popup = ({ setModalVisible, modalVisible, handleDelete }) => {
   return (
     <View>
       <Modal
@@ -9,7 +9,6 @@ const Popup = ({ setModalVisible, modalVisible, handeDelete }) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
@@ -24,7 +23,7 @@ const Popup = ({ setModalVisible, modalVisible, handeDelete }) => {
             <Text className="pb-5 text-lg font-bold">Clear Data?</Text>
             <Pressable
               className="mb-2 min-w-[60%] rounded-md bg-cobalt p-2 px-5"
-              onPress={() => handeDelete()}
+              onPress={() => handleDelete()}
             >
               <Text className="text-center font-bold text-white">Confirm</Text>
             </Pressable>

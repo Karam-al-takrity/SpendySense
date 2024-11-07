@@ -2,9 +2,8 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { getBalance, createBalance, createItem } from "@/backend/db";
-
 const Home = () => {
-  const [hasBalance, setHasBalance] = useState(null); // `null` initially, to represent loading state
+  const [hasBalance, setHasBalance] = useState(null);
 
   useEffect(() => {
     const checkBalance = async () => {
@@ -23,7 +22,6 @@ const Home = () => {
   }, []);
 
   if (hasBalance === null) {
-    // Optionally, render a loading indicator here while checking balance
     return <View />;
   }
 

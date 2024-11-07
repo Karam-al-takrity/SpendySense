@@ -18,7 +18,6 @@ import {
 import { StatusBar } from "expo-status-bar";
 import Popup from "../../../components/Popup";
 import * as Updates from "expo-updates";
-
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -76,8 +75,10 @@ const balance = () => {
       console.error("Error fetching items:", error);
     }
   };
-  handeDelete = async () => {
+
+  const handleDelete = async () => {
     await DeleteDB();
+    setModalVisible(false);
     await Updates.reloadAsync();
   };
 
@@ -221,7 +222,7 @@ const balance = () => {
           <Popup
             setModalVisible={setModalVisible}
             modalVisible={modalVisible}
-            handeDelete={handeDelete}
+            handleDelete={handleDelete}
           />
         )}
       </View>
