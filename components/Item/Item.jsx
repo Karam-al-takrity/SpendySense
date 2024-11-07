@@ -3,30 +3,30 @@ import { Text, View, TouchableOpacity } from "react-native";
 
 function Item({ name, price, date, onDelete, onEdit, formatNumber }) {
   return (
-    <View className="bg-white flex flex-row p-4 m-2 rounded-lg shadow  justify-between items-center">
-      <View className="flex flex-row  w-[60%] justify-between">
-        <View className="flex flex-col max-w-[55%]">
+    <View className="m-2 flex flex-row items-center justify-between rounded-lg bg-white p-4 shadow">
+      <View className="flex w-[60%] flex-row justify-between">
+        <View className="flex max-w-[55%] flex-col">
           <Text className="text-lg font-semibold">{name}</Text>
           <Text className="text-md">
             ${formatNumber(parseFloat(price).toFixed(2))}
           </Text>
         </View>
-        <Text className="text-xs h-8 mt-2 font-semibold text-gray-800 bg-gray-200 p-2 rounded-lg shadow-sm">
+        <Text className="mt-2 h-8 rounded-lg bg-gray-200 p-2 text-xs font-semibold text-gray-800 shadow-sm">
           {date}
         </Text>
       </View>
       <View className="flex-row">
         <TouchableOpacity
           onPress={onEdit}
-          className="bg-blue-500 p-2 rounded-lg mr-2"
+          className="mr-2 rounded-lg bg-blue-500 p-2"
         >
-          <Text className="text-white font-bold">Edit</Text>
+          <Text className="font-bold text-white">Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onDelete}
-          className="bg-red-500 p-2 rounded-lg"
+          className="rounded-lg bg-red-500 p-2"
         >
-          <Text className="text-white font-bold">Delete</Text>
+          <Text className="font-bold text-white">Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
