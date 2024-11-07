@@ -23,13 +23,13 @@ export default function AddMoney({
         onRequestClose={() => setShowaddMoney(false)}
       >
         <View
-          className="flex-1 justify-center  items-center"
+          className="flex-1 items-center justify-center"
           style={{
             backgroundColor: "rgba(51, 65, 102, 0.6)",
             backdropFilter: "blur(5px)",
           }}
         >
-          <View className="bg-white p-6 rounded-lg w-4/5 shadow-lg">
+          <View className="w-4/5 rounded-lg bg-white p-6 shadow-lg">
             <FieldInput
               value={numberAdded}
               onChangeText={setNumberAdded}
@@ -47,7 +47,7 @@ export default function AddMoney({
               onPress={() => handleCancelAdd()}
               className="mt-4"
             >
-              <Text className="text-center text-red-600 rounded-lg ">
+              <Text className="rounded-lg text-center font-bold text-red-600">
                 Cancel
               </Text>
             </TouchableOpacity>

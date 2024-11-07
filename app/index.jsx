@@ -1,26 +1,39 @@
 import { Redirect } from "expo-router";
-import { createBalance, createItem } from "@/backend/db";
-import { useEffect } from "react";
-import BalanceChecker from "@/components/BalanceChecker";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { getBalance, createBalance, createItem } from "@/backend/db";
 
 const Home = () => {
+  const [hasBalance, setHasBalance] = useState(null); // `null` initially, to represent loading state
+
   useEffect(() => {
-    createBalance();
-    createItem();
+    const checkBalance = async () => {
+      try {
+        await createBalance();
+        await createItem();
+
+        const balanceData = await getBalance();
+        setHasBalance(balanceData !== undefined && balanceData !== null);
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+
+    checkBalance();
   }, []);
 
-  // console.log("labosi is " + labosi);
-  // let labosi = BalanceChecker() === true ? true : false;
+  if (hasBalance === null) {
+    // Optionally, render a loading indicator here while checking balance
+    return <View />;
+  }
 
   return (
     <View>
-      {/* {labosi === true ? (
+      {hasBalance ? (
         <Redirect href="/(root)/(tabs)/balance" />
       ) : (
         <Redirect href="/(root)/(tabs)/home" />
-      )} */}
-      <Redirect href="/(root)/(tabs)/balance" />
+      )}
     </View>
   );
 };

@@ -13,8 +13,11 @@ import {
   addItem,
   updateItem,
   deleteItem,
+  DeleteDB,
 } from "@/backend/db";
 import { StatusBar } from "expo-status-bar";
+import Popup from "../../../components/Popup";
+import * as Updates from "expo-updates";
 
 const formatNumber = (number) => {
   if (isNaN(number)) return number;
@@ -34,6 +37,7 @@ const balance = () => {
   const [currentItemId, setCurrentItemId] = useState(null);
   const [showaddMoney, setShowaddMoney] = useState(false);
   const [numberAdded, setNumberAdded] = useState("");
+  const [modalVisible, setModalVisible] = useState(Boolean);
 
   const MoneyAdded = () => {
     setMoneyAdded(false);
@@ -72,6 +76,10 @@ const balance = () => {
       console.error("Error fetching items:", error);
     }
   };
+  handeDelete = async () => {
+    await DeleteDB();
+    await Updates.reloadAsync();
+  };
 
   const handleSubmitItem = async () => {
     if (itemName && itemPrice && !isNaN(itemPrice)) {
@@ -79,7 +87,7 @@ const balance = () => {
       if (price > initialAmount && !isEditing) {
         Alert.alert(
           "Insufficient Balance",
-          "The item price exceeds your remaining balance."
+          "The item price exceeds your remaining balance.",
         );
         return;
       }
@@ -89,8 +97,8 @@ const balance = () => {
           prevItems.map((item) =>
             item.id === currentItemId
               ? { ...item, name: itemName, price: price }
-              : item
-          )
+              : item,
+          ),
         );
         const previousItem = items.find((item) => item.id === currentItemId);
         await updateItem(currentItemId, itemName, price);
@@ -163,7 +171,7 @@ const balance = () => {
   return (
     <SafeAreaView>
       <StatusBar backgroundColor="#334166" style="light" />
-      <View className="mt-10">
+      <View className="relative h-screen py-10">
         <RemainingBalance
           initialAmount={initialAmount}
           setInitialAmount={setInitialAmount}
@@ -192,7 +200,7 @@ const balance = () => {
         />
 
         <FlatList
-          className="w-full mt-10 max-h-[62%] "
+          className="mt-10 max-h-[62%] w-full"
           renderItem={({ item }) => (
             <Item
               key={item.id}
@@ -206,9 +214,16 @@ const balance = () => {
           )}
           data={items}
         />
-        <View className="flex items-center justify-center mt-2">
-          <TrashButton />
+        <View className="absolute bottom-0 mt-2 flex w-full items-center justify-center">
+          <TrashButton setModalVisible={setModalVisible} />
         </View>
+        {modalVisible && (
+          <Popup
+            setModalVisible={setModalVisible}
+            modalVisible={modalVisible}
+            handeDelete={handeDelete}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

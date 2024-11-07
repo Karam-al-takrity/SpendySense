@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { AntDesign } from "@expo/vector-icons"; // Using AntDesign for the trash can icon
+import { AntDesign } from "@expo/vector-icons";
 import { DeleteDB } from "@/backend/db";
 import * as Updates from "expo-updates";
 
-const TrashButton = () => {
+const TrashButton = ({ setModalVisible }) => {
   handleSubmit = async () => {
     await DeleteDB();
     await Updates.reloadAsync();
@@ -13,8 +13,8 @@ const TrashButton = () => {
   return (
     <View className="p-2">
       <TouchableOpacity
-        className="bg-gray-200 rounded-full p-4"
-        onPress={() => handleSubmit()}
+        className="rounded-full bg-gray-200 p-4"
+        onPress={() => setModalVisible(true)}
       >
         <AntDesign name="delete" size={24} color="black" />
       </TouchableOpacity>
