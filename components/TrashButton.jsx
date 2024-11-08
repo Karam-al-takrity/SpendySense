@@ -1,15 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { DeleteDB } from "@/backend/db";
-import * as Updates from "expo-updates";
 
 const TrashButton = ({ setModalVisible }) => {
-  handleSubmit = async () => {
-    await DeleteDB();
-    await Updates.reloadAsync();
-  };
-
   return (
     <View className="p-2">
       <TouchableOpacity

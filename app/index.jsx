@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { getBalance, createBalance, createItem } from "@/backend/db";
+import "react-native-reanimated";
 const Home = () => {
   const [hasBalance, setHasBalance] = useState(null);
 

@@ -77,8 +77,8 @@ const balance = () => {
   };
 
   const handleDelete = async () => {
-    await DeleteDB();
     setModalVisible(false);
+    await DeleteDB();
     await Updates.reloadAsync();
   };
 
@@ -88,7 +88,7 @@ const balance = () => {
       if (price > initialAmount && !isEditing) {
         Alert.alert(
           "Insufficient Balance",
-          "The item price exceeds your remaining balance.",
+          "The item price exceeds your remaining balance."
         );
         return;
       }
@@ -98,8 +98,8 @@ const balance = () => {
           prevItems.map((item) =>
             item.id === currentItemId
               ? { ...item, name: itemName, price: price }
-              : item,
-          ),
+              : item
+          )
         );
         const previousItem = items.find((item) => item.id === currentItemId);
         await updateItem(currentItemId, itemName, price);
