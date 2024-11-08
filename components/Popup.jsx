@@ -9,7 +9,7 @@ const Popup = ({ setModalVisible, modalVisible, handleDelete }) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          setModalVisible(!modalVisible);
+          setModalVisible(false);
         }}
       >
         <View

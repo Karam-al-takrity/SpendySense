@@ -21,7 +21,7 @@ export async function createItem() {
 export async function createBalance() {
   const db = await openDatabase("spendysense.db");
   await db.execAsync(
-    "CREATE TABLE IF NOT EXISTS balance (id INTEGER PRIMARY KEY AUTOINCREMENT,money FLOAT NOT NULL);",
+    "CREATE TABLE IF NOT EXISTS balance (id INTEGER PRIMARY KEY AUTOINCREMENT,money FLOAT NOT NULL);"
   );
   console.log("Balance table created or already exists.");
 }
@@ -36,7 +36,7 @@ export async function addBalance(balance) {
     await db.runAsync(
       "UPDATE balance SET money = ? WHERE rowid = ?",
       balance,
-      1,
+      1
     );
     console.log("Balance updated to " + balance);
   } else {
@@ -52,7 +52,7 @@ export async function addItem(name, price) {
   await db.runAsync(
     "INSERT INTO items (name, price) VALUES (?, ?)",
     name,
-    price,
+    price
   );
   console.log("Added new Item: " + name + price);
 }
@@ -96,7 +96,7 @@ export async function updateItem(id, name, price) {
     "UPDATE items SET name = ?, price = ? WHERE id = ?",
     name,
     price,
-    id,
+    id
   );
 
   if (result.changes > 0) {
@@ -128,13 +128,13 @@ export async function DeleteDB() {
       // Delete the database file
       await FileSystem.deleteAsync(dbPath);
       console.log("Database deleted successfully.");
-      // Alert.alert("Success", "Deleted successfully.");
+      Alert.alert("Success", "Deleted successfully.");
     } else {
       console.log("Database does not exist.");
-      // Alert.alert("Error", "Database does not exist.");
+      Alert.alert("Error", "Database does not exist.");
     }
   } catch (error) {
     console.log("Error deleting database: ", error);
-    // Alert.alert("Error", "An error occurred while deleting the database.");
+    Alert.alert("Error", "An error occurred while deleting the database.");
   }
 }
