@@ -124,6 +124,7 @@ const balance = () => {
         setItemName("");
         setItemPrice("");
       }
+      setShowOverlay(false);
     } else {
       Alert.alert("Invalid Input", "Please enter a valid item name and price.");
     }
