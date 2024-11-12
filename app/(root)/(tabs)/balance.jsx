@@ -115,6 +115,7 @@ const balance = () => {
         await addItem(itemName, itemPrice);
         newBalance = initialAmount - price;
         setInitialAmount(newBalance);
+        setShowOverlay(false);
         await GetItems();
         await addBalance(newBalance);
       }
@@ -123,7 +124,6 @@ const balance = () => {
         setItemName("");
         setItemPrice("");
       }
-      setShowOverlay(false);
     } else {
       Alert.alert("Invalid Input", "Please enter a valid item name and price.");
     }
@@ -223,6 +223,9 @@ const balance = () => {
             setModalVisible={setModalVisible}
             modalVisible={modalVisible}
             handleDelete={handleDelete}
+            question="Clear Data?"
+            option1="Confrim"
+            option2="Cancel"
           />
         )}
       </View>

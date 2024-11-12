@@ -25,17 +25,17 @@ export default function AddItem({
   return (
     <View>
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={showOverlay}
         onRequestClose={() => setShowOverlay(false)}
       >
         <View
           className="flex-1 justify-center  items-center"
-          style={{
-            backgroundColor: "rgba(51, 65, 102, 0.6)",
-            backdropFilter: "blur(5px)",
-          }}
+          // style={{
+          //   backgroundColor: "rgba(51, 65, 102, 0.6)",
+          //   backdropFilter: "blur(5px)",
+          // }}
         >
           <View className="bg-white p-6 rounded-lg w-4/5 shadow-lg">
             <FieldInput

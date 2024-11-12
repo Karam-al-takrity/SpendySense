@@ -17,17 +17,17 @@ export default function AddMoney({
   return (
     <View>
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={isShow}
         onRequestClose={() => setShowaddMoney(false)}
       >
         <View
           className="flex-1 items-center justify-center"
-          style={{
-            backgroundColor: "rgba(51, 65, 102, 0.6)",
-            backdropFilter: "blur(5px)",
-          }}
+          // style={{
+          //   backgroundColor: "rgba(51, 65, 102, 0.6)",
+          //   backdropFilter: "blur(5px)",
+          // }}
         >
           <View className="w-4/5 rounded-lg bg-white p-6 shadow-lg">
             <FieldInput
